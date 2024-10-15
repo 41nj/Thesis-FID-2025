@@ -32,7 +32,7 @@ fake_loader = DataLoader(fake_dataset, batch_size=32, shuffle=False)
 fid = FrechetInceptionDistance(feature=2048).to(device)
 
 def update_fid(loader, fid, real=True):
-    """Aktualisiere FID mit echten oder generierten Bildern"""
+    """calculate FID score based on features from real and fake images"""
     with torch.no_grad():
         for images, _ in loader:
             # move to GPU if possible
