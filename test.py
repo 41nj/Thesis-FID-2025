@@ -15,7 +15,7 @@ def get_inception_features(img_paths, model, transform, device):
         for img_path in img_paths:
             img = Image.open(img_path).convert('RGB')  # convert to RGB because InceptionV3 expects 3 channels
             img = transform(img).unsqueeze(0).to(device)  # transform and add batch dimension
-            feature = model(img)  # Feature-Vektor extrahieren
+            feature = model(img)  
             features.append(feature.cpu().numpy().flatten())  # features are saved as 1D array
     return np.array(features)
 
