@@ -6,7 +6,7 @@ from PIL import Image
 from os import path
 import glob
 import plotting
-import calculate_fid
+import calculate_fid as fid
 
 def get_inception_features(img_paths, model, transform, device):
     features = []
