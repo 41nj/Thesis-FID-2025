@@ -98,7 +98,7 @@ def run_tests():
     fid_value_1 = test_with_inceptionV3(digits_real="original_images/mnist_images", digits_fake="modified_images/cropped_images/crop_70")
     fid_values_multiple.append(fid_value_1)
 
-    fid_value_2 = test_with_inceptionV3(digits_real="original_images/mnist_images", digits_fake="modified_imaegs/cropped_images/crop_50")
+    fid_value_2 = test_with_inceptionV3(digits_real="original_images/mnist_images", digits_fake="modified_images/cropped_images/crop_50")
     fid_values_multiple.append(fid_value_2)
 
     fid_value_3 = test_with_inceptionV3(digits_real="original_images/mnist_images", digits_fake="modified_images/cropped_images/crop_20")
