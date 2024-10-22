@@ -92,16 +92,16 @@ def run_tests():
     fid_values_single = []
     fid_values_multiple = []
     
-    fid_value_0 = test_with_inceptionV3(digits_real="mnist_images", digits_fake="mnist_images")
+    fid_value_0 = test_with_inceptionV3(digits_real="original_images/mnist_images", digits_fake="original_images/mnist_images")
     fid_values_multiple.append(fid_value_0)
 
-    fid_value_1 = test_with_inceptionV3(digits_real="mnist_images", digits_fake="crops/cropped_images/crop_70")
+    fid_value_1 = test_with_inceptionV3(digits_real="original_images/mnist_images", digits_fake="modified_images/cropped_images/crop_70")
     fid_values_multiple.append(fid_value_1)
 
-    fid_value_2 = test_with_inceptionV3(digits_real="mnist_images", digits_fake="crops/cropped_images/crop_50")
+    fid_value_2 = test_with_inceptionV3(digits_real="original_images/mnist_images", digits_fake="modified_imaegs/cropped_images/crop_50")
     fid_values_multiple.append(fid_value_2)
 
-    fid_value_3 = test_with_inceptionV3(digits_real="mnist_images", digits_fake="crops/cropped_images/crop_20")
+    fid_value_3 = test_with_inceptionV3(digits_real="original_images/mnist_images", digits_fake="modified_images/cropped_images/crop_20")
     fid_values_multiple.append(fid_value_3)
     """
     fid_value_4 = test_with_inceptionV3(digits_real="mnist_images", digits_fake="mnist_images")
