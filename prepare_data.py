@@ -12,6 +12,7 @@ from PIL import Image
 
 
 class AddGaussianNoise:
+    """Applies Gaussian noise to the image."""
     def __init__(self, mean=0.0, std=0.1):  
         self.mean = mean
         self.std = std
@@ -30,12 +31,12 @@ class AddGaussianNoise:
 
 
 class AddBlur:
-    """Wendet einen Unschärfeeffekt auf das Bild an."""
+    """Applies Gaussian blur to the image."""
     def __call__(self, img):
-        return img.filter(ImageFilter.GaussianBlur(radius=1.0))  # Radius der Unschärfe
+        return img.filter(ImageFilter.GaussianBlur(radius=1.0))  
 
 class BlockMasking:
-    """Maskiert 5 zufällige Blöcke im Bild."""
+    """Applies block masking to the image."""
     def __call__(self, img):
         np_img = np.array(img)
         h, w, _ = np_img.shape
@@ -49,9 +50,10 @@ class BlockMasking:
 
 
 class ImageSwirlTransform:
+    """Applies swirl transformation to the image."""
     def __init__(self, disturbance=10, max_radius=None):
         self.disturbance = disturbance
-        self.max_radius = max_radius  # Optionaler Parameter, um den maximalen Radius zu definieren
+        self.max_radius = max_radius  
 
     def __call__(self, image):
         # Convert PIL image to numpy array
@@ -62,12 +64,11 @@ class ImageSwirlTransform:
         center_x = width / 2
         center_y = height / 2
         
-        # Optional: Maximaler Radius für den Swirl (um die Ränder auszuschließen)
         if self.max_radius is None:
-            self.max_radius = min(center_x, center_y)  # Standardmäßig der Radius bis zum Rand
+            self.max_radius = min(center_x, center_y)  
 
-        # Create an empty array for the swirled image
-        swirled_image = np.copy(image_np)  # Kopiere das Originalbild, damit die Ränder unberührt bleiben
+        # Create a copy of the image to apply the swirl effect 
+        swirled_image = np.copy(image_np)  
         
         for x in range(width):
             for y in range(height):
@@ -75,28 +76,28 @@ class ImageSwirlTransform:
                 dy = y - center_y
                 r = math.sqrt(dx**2 + dy**2)
 
-                # Nur Transformation für Pixel im Inneren des maximalen Radius
+                # transformation only if within the max radius
                 if r < self.max_radius:
                     theta = math.atan2(dy, dx)
                     
-                    # Apply the swirl transformation
-                    theta_swirl = theta + (self.disturbance * r * math.log(2)) / 50  # Weniger aggressiv
+                    # Apply the swirl effect 
+                    theta_swirl = theta + (self.disturbance * r * math.log(2)) / 50  
                     
                     # Convert back to Cartesian coordinates (xorg, yorg)
                     xorg = int(center_x + r * math.cos(theta_swirl))
                     yorg = int(center_y + r * math.sin(theta_swirl))
                     
-                    # Check if the new coordinates are within image bounds
+                    # check if the new coordinates are within image bounds
                     if 0 <= xorg < width and 0 <= yorg < height:
                         swirled_image[y, x] = image_np[yorg, xorg]
         
-        # Convert the swirled image back to PIL format
+        # swirled image back to PIL format
         swirled_image_pil = Image.fromarray(swirled_image)
         
         return swirled_image_pil
 
-# Wrapper for Transforming Subsets
 class TransformedSubset(Dataset):
+    """Applies a transformation to a subset of the dataset."""
     def __init__(self, subset, transform):
         self.subset = subset
         self.transform = transform
@@ -108,15 +109,6 @@ class TransformedSubset(Dataset):
         image, label = self.subset[idx]
         if self.transform:
             image = self.transform(image)
-        
-        # Ensure that the image is a tensor before returning it
-        if isinstance(image, Image.Image):
-            image = transforms.ToTensor()(image)
-        
-        # Verify that the image is a tensor
-        if not isinstance(image, torch.Tensor):
-            print(f"Image type after transform: {type(image)}")  # This will help verify the image type
-        
                   
         return image, label
 
@@ -124,7 +116,7 @@ class TransformedSubset(Dataset):
 # Normalize Transformation
 normalize = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
 
-# Transformations
+# transformations
 transform_original = transforms.Compose([transforms.ToTensor(), normalize])
 transform_noise = transforms.Compose([AddGaussianNoise(), transforms.ToTensor(), normalize])
 transform_blur = transforms.Compose([AddBlur(), transforms.ToTensor(), normalize])
@@ -132,11 +124,10 @@ transform_mask = transforms.Compose([BlockMasking(), transforms.ToTensor(), norm
 transform_swirl = transforms.Compose([ImageSwirlTransform(disturbance=4, max_radius=25), transforms.ToTensor(), normalize])
 
 
-# Load CIFAR-10 Dataset
 trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=None)
 testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_original)
 
-# Filter Classes
+# filter Classes
 filtered_classes = ['dog', 'bird', 'airplane', 'truck']
 filtered_indices = [i for i, label in enumerate(trainset.targets) if trainset.classes[label] not in filtered_classes]
 trainset_filtered = torch.utils.data.Subset(trainset, filtered_indices)
@@ -168,7 +159,7 @@ for i in range(len(combined_dataset)):
 
 print("All images in combined_dataset are tensors.")
 
-# Utility: Save Image with Transformations
+# image saving
 """def save_transformed_image(dataset, index, transform, img_folder, filename):
     image, label = dataset[index]
     if transform:
@@ -186,13 +177,14 @@ save_transformed_image(trainset2_blur, 0, None, img_folder, 'example_image_blur.
 save_transformed_image(trainset2_mask, 0, None, img_folder, 'example_image_mask.png')
 save_transformed_image(trainset2_swirl, 0, None, img_folder, 'example_image_swirl.png')"""
 
-# Output Dataset Sizes
+# verify sizes
 print(f"Original Subset Size: {len(trainset1_original)}")
 print(f"Noise Subset Size: {len(trainset2_noise)}")
 print(f"Blur Subset Size: {len(trainset2_blur)}")
 print(f"Mask Subset Size: {len(trainset2_mask)}")
 print(f"Swirl Subset Size: {len(trainset2_swirl)}")
 
+#check for unique labels
 all_labels = [label for _, label in combined_dataset]
 unique_labels = set(all_labels)
 print("Unique labels in the combined dataset:", unique_labels)
