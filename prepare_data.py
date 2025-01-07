@@ -40,12 +40,12 @@ class BlockMasking:
     def __call__(self, img):
         np_img = np.array(img)
         h, w, _ = np_img.shape
-        block_height, block_width = 4, 4  # Größe der Blöcke
-        num_blocks = 16  # Anzahl der Blöcke
+        block_height, block_width = 4, 4  
+        num_blocks = 16  
         for _ in range(num_blocks):
             x1 = random.randint(0, w - block_width)
             y1 = random.randint(0, h - block_height)
-            np_img[y1:y1 + block_height, x1:x1 + block_width] = 0  # Block maskieren (schwarz setzen)
+            np_img[y1:y1 + block_height, x1:x1 + block_width] = 0  
         return Image.fromarray(np_img)
 
 
